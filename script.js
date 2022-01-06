@@ -6,8 +6,14 @@ let weather = {
             + "&units=metric&appid=" 
             + this.apiKey
         )
-            .then((response) => response.json())
-            .then((data) => this.displayWeather(data)); 
+            .then((response) => {
+                if (!response.ok){
+                    alert("No weather found.");
+                    throw new Error("No weather found.");
+                }
+            return response.json();
+            })
+            .then((data) => this.displayWeather(data));
     },
     displayWeather: function(data) {
         const { name } = data;
@@ -21,6 +27,8 @@ let weather = {
         document.querySelector(".temp").innerText = temp + "°C";
         document.querySelector(".humidity").innerText = "Humidity is" + humidity + "%";
         document.querySelector(".wind").innerText = "Wind is" + speed + "km/h";
+        document.querySelector(".whether").classList.remove("loading");
+        document.body.style.backgroundImage = "url('https://source.unsplash.com/1600x900/?" + name + "')";
     },
 search: function (){
     this.fetchWeather(document.querySelector(".search-bar").value)
@@ -33,4 +41,6 @@ document.querySelector(".search-bar").addEventListener("keyup", function(event){
   if (event.key == "Enter") {
    weather.search();   
   }
-})
+});
+
+weather.fetchWeather("Denver");
